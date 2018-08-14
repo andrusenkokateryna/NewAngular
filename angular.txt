@@ -550,6 +550,327 @@ import 'zone.js/dist/zone';
 C:\angular2\purchaseApp>npm run dev
 После этого в веб-браузере будет отображена таблица с покупками и форма для добавлени новой покупки
 
+.....................Первое приложение на JavaScript...........................
+
+    
+
+ 
+В предыдущей теме было создано первое приложение на Angular с применением TypeScript. Использование языка программирования TypeScript представляет наиболее распространенный подход для создания приложений на Angular. Однако это не единственный подход. Теоретически мы можем использовать также Dart, ES2015 и ES5(стандартный JavaScript). И в этой статье рассмотрим создание первого приложения с помощью кода javascript, который поддерживается всеми браузерами.
+
+Создадим каталог приложения, а в нем определим каталог app.
+
+В этот каталог app добавим новый файл app.component.js со следующим кодом:
+
+
+function Item(purchase, price, done) {
+    this.purchase = purchase;
+    this.price = price;
+    this.done = done;
+}
+ 
+var AppComponent = ng.core.Component({
+    selector: 'my-app',
+    template:  `<div class="page-header">
+        <h1> Список покупок </h1>
+    </div>
+    <div class="panel">
+        <div class="form-inline">
+            <div class="form-group">
+                <div class="col-md-8">
+                    <input class="form-control" [(ngModel)]="text" placeholder = "Название" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-6">
+                    <input type="number" class="form-control" [(ngModel)]="price" placeholder="Цена" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-8">
+                    <button class="btn btn-default" (click)="addItem(text, price)">Добавить</button>
+                </div>
+            </div>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Предмет</th>
+                    <th>Цена</th>
+                    <th>Куплено</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of items">
+                    <td>{{item.purchase}}</td>
+                    <td>{{item.price}}</td>
+                    <td><input type="checkbox" [(ngModel)]="item.done" /></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>`
+    })
+  .Class({
+    constructor: function() { 
+     
+        this.items= [
+            new Item("Хлеб",15.9),
+            new Item("Масло",60),
+            new Item("Картофель",22.6, true),
+            new Item("Сыр",310)
+        ];
+    }
+});
+ 
+AppComponent.prototype.addItem = function (text, price) {
+        if (text == undefined || text.trim() == "" || price == undefined)
+            return;
+        this.items.push(new Item(text, price));
+};
+Здесь определен главный компонент приложения - AppComponent. Для его создания применяется функция ng.core.Component() из библиотеки angular/core
+
+Весь код почти аналогичен коду компонента на TypeScript из прошлой темы.
+
+Также добавим в папку app новый файл app.module.js:
+
+
+var AppModule = ng.core.NgModule({
+    imports: [ng.platformBrowser.BrowserModule, ng.forms.FormsModule],
+    declarations: [AppComponent],
+    bootstrap: [AppComponent]
+  })
+  .Class({
+    constructor: function() { }
+});
+Модуль создается с помощью функции ng.core.NgModule(), которая определена в библиотеке angular/core.
+
+Свойство imports у модуля указывает на модули, которые будут использоваться. Свойство declarations хранит набор используемых компонентов, а свойство bootstrap определяет загружаемый компонент - AppComponent.
+
+И далее создадим в папке app новый файл main.js:
+
+
+ng.platformBrowserDynamic.platformBrowserDynamic()
+    .bootstrapModule(AppModule);
+Этот файл будет загружать основной модуль приложения.
+
+И определим в корневой папке проекта веб-страницу приложения index.html:
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Приложение покупок</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <script src="https://unpkg.com/core-js/client/shim.min.js"></script>
+    <script src="https://unpkg.com/zone.js/dist/zone.min.js"></script>
+    <script src="https://unpkg.com/rxjs/bundles/Rx.min.js"></script>
+  
+    <script src="https://unpkg.com/@angular/core@2.0.0/bundles/core.umd.js"></script>
+    <script src="https://unpkg.com/@angular/common@2.0.0/bundles/common.umd.js"></script>
+    <script src="https://unpkg.com/@angular/compiler@2.0.0/bundles/compiler.umd.js"></script>
+    <script src="https://unpkg.com/@angular/forms@2.0.0/bundles/forms.umd.js"></script>
+    <script src="https://unpkg.com/@angular/platform-browser@2.0.0/bundles/platform-browser.umd.js"></script>
+    <script src="https://unpkg.com/@angular/platform-browser-dynamic@2.0.0/bundles/platform-browser-dynamic.umd.js"></script>
+  </head>
+  <body>
+  
+    <my-app>Загрузка...</my-app>
+    <script src="app/app.component.js"></script>
+    <script src="app/app.module.js"></script>
+    <script src="app/main.js"></script>
+  </body>
+</html>
+Для подключения внешних файлов здесь применяется CDN unpkg.com.
+
+Первая группа файлов аналогична тем, что подключались в прошлой теме в приложении на TypeScript:
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+<script src="https://unpkg.com/core-js/client/shim.min.js"></script>
+<script src="https://unpkg.com/zone.js/dist/zone.min.js"></script>
+<script src="https://unpkg.com/rxjs/bundles/Rx.min.js"></script>
+Но кроме этих файлов также необходимо подключить все используемые модули. Можно заметить, что в коде используются функции, которые начинаются с ng.*, например, ng.core.Component, ng.forms.FormsModule и другие. Это тот функционал, который предоставляется непосредственно библиотеками Angular, и эти библиотеки надо подключить:
+
+<script src="https://unpkg.com/@angular/core@2.0.0/bundles/core.umd.js"></script>
+<script src="https://unpkg.com/@angular/common@2.0.0/bundles/common.umd.js"></script>
+<script src="https://unpkg.com/@angular/compiler@2.0.0/bundles/compiler.umd.js"></script>
+<script src="https://unpkg.com/@angular/forms@2.0.0/bundles/forms.umd.js"></script>
+<script src="https://unpkg.com/@angular/platform-browser@2.0.0/bundles/platform-browser.umd.js"></script>
+<script src="https://unpkg.com/@angular/platform-browser-dynamic@2.0.0/bundles/platform-browser-dynamic.umd.js"></script>
+В итоге у нас получится следующая структура проекта:
+
+app
+
+app.component.js
+
+app.module.js
+
+main.js
+
+index.html
+
+Теперь запустим проект. Для этого достаточно перенести файл веб-страницы в браузер:
+
+Первое приложение на Angular 2 на JavaScript
+
+ 
+
+====================Основы Angular========================
+==========================================================
+.....................Компоненты...........................
+     
+Одним из ключевых элементов приложения являются компоненты. Компонент управляет отображением представления на экране.
+
+Так, при создании первого приложения в прошлой главе был определен следующий компонент
+ (in app.component.ts)
+
+
+import { Component } from '@angular/core';
+     
+@Component({
+    selector: 'my-app',
+    template: `<label>Введите имя:</label>
+                 <input [(ngModel)]="name" placeholder="name">
+                 <h1>Добро пожаловать {{name}}!</h1>`
+})
+export class AppComponent { 
+    name: "";
+}
+Сам класс компонента здесь относительно небольшой:
+
+
+export class AppComponent { 
+    name: "";
+}
+Чтобы класс мог использоваться в других модулях, он определяется с ключевым словом export. 
+В самом же классе определена лишь одна переменная, которая в качестве значения 
+хранит некоторую строку.
+
+Для создания компонента необходимо импортировать функцию декоратора @Component 
+из библиотеки @angular/core. Декоратор @Component позволяет 
+идентифицировать класс как компонент.
+
+Если бы мы не применили декоратор @Component к классу AppComponent, то класс AppComponent компонентом бы не считался.
+
+Декоратор @Component в качестве параметра принимает объект с конфигурацией, которая указывает фреймворку, как работать с компонентом и его представлением.
+
+С помощью свойства #template#. Шаблон представляет кусок разметки HTML с вкраплениями кода Angular. Фактически шаблон это и есть представление, которое увидит пользователь при работе с приложением.
+
+Каждый компонент должен иметь один шаблон. Однако необязательно определять шаблон напрямую с помощью свойства template. Можно вынести шаблон во внешний файл с разметкой html, а для его подключения использовать свойство templateUrl.
+
+Шаблон может быть однострочным или многострочным. Если шаблон многострочный, то он заключается в косые кавычки (`), которые стоит отличать от стандартных ординарных кавычек (').
+
+Также в примере выше устанавливается свойство selector, которое определяет селектор CSS. В элемент с этим селектором Angular будет добавлять представление компонента. Например, в примере выше селектор имеет значение my-app. Соответственно если html-страница содержит элемент <my-app></my-app>, например:
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Hello Angular 5</title>
+</head>
+<body>
+    <my-app>Загрузка...</my-app>
+    <script src="public/polyfills.js"></script>
+    <script src="public/app.js"></script>
+</body>
+</html>
+То именно этот элемент будет использоваться для рендеринга представления компонента.
+
+============================================================================================
+....................................Модули..................................................
+============================================================================================
+
+Приложение Angular состоит из отдельных модулей. Как правило, приложения состоят из нескольких модулей. И каждое приложение Angular как минимум имеет один корневой модуль (root module), который, согласно условностям, называется AppModule. Например, в первой главе использовался следующий корневой модуль:
+
+
+import { NgModule }      from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule }   from '@angular/forms';
+import { AppComponent }   from './app.component';
+ 
+@NgModule({
+    imports:      [ BrowserModule, FormsModule ],
+    declarations: [ AppComponent ],
+    bootstrap:    [ AppComponent ]
+})
+export class AppModule { }
+
+Для работы модуля ему необходимы ряд библиотек, поэтому в начале файла идет их подключение. Имя каждой библиотеки Angular начинается с префикса @angular.
+
+Библиотеки устанавливаются через пакетный менеджер npm и импортируются с помощью директивы import. Например, импорт функциональности декоратора NgModule из библиотеки @angular/core:
+
+1
+import { NgModule } from '@angular/core';
+То есть здесь мы должны импортировать все модули и классы, которые использует данный модуль. В частности, для AppModule необходимы:
+
+NgModule: функциональность декоратора NgModule, без которой мы не сможем создать модуль
+
+BrowserModule: модуль, необходимый для работы с браузером
+
+FormsModule: модуль, необходимый для работы с формами html и, в частности, с элементами input. (Так как класс компонента работает с подобными элементами, то мы обязаны также импортировать этот модуль)
+
+AppComponent: функциональность корневого компонента приложения
+
+Непосредственно сам модуль представлен классом AppModule, который на первый взгляд ничего не делает и не содержит никакого функционала:
+
+1
+export class AppModule { }
+Однако в Angular модуль это не просто класс. Каждый модуль должен определяться с декоратором @NgModule.
+
+NgModule представляет функцию-декоратора, которая принимает объект, свойства которого описывают метаданные модуля. Наиболее важные свойства:
+
+declarations: классы представлений (view classes), которые принадлежат модулю. Angular имеет три типа классов представлений: компоненты (components), директивы (directives), каналы (pipes)
+
+exports: набор классов представлений, которые должны использоваться в шаблонах компонентов из других модулей
+
+imports: другие модули, классы которых необходимы для шаблонов компонентов из текущего модуля
+
+providers: классы, создающие сервисы, используемые модулем
+
+bootstrap: корневой компонент, который вызывается по умолчанию при загрузке приложения
+
+В случае выше единственным классом представлений является компонент AppComponent. Поэтому он указывается для свойств declarations и bootstrap. И поскольку его действие зависит от модулей BrowserModule и FormsModule, то данные модули указываются для свойства imports.
+
+Но при необходимости мы могли бы использовать и другие свойства:
+
+
+@NgModule({
+    imports:      [ BrowserModule, FormsModule ],
+    declarations: [ AppComponent ],
+    bootstrap:    [ AppComponent ],
+    exports:      [ ],
+    providers:    [ ]
+})
+
+ 
+
+
+    
+
+ 
+
+  
+
+ 
+
+
+
+
+ 
+
+ 
+
+ 
+
+
+
+ 
+
+
+
+
 
     
 
