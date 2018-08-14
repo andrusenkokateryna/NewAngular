@@ -1,8 +1,17 @@
 .card {
 	margin-left: 500px;
+	color: olive;
 }
 
 :host {
 	font-family: Verdana;
-	border: 3px solid navy;
+	text-align: center;
+	font-size: 20px;
+	color: blue;
 };
+
+button .click {
+	padding: 10px;
+	border: 2px solid red;
+
+}
