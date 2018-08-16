@@ -33,3 +33,16 @@ button {
 	margin-bottom: 20px;
 }
 
+.click-box {
+	text-align: center;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.changeName {
+	text-align: center;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	font-size: 20px;
+
+}

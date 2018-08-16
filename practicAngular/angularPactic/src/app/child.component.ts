@@ -1,13 +1,19 @@
-import {Input, Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output} from '@angular/core';
       
 @Component({
     selector: 'child-comp',
-    template: `<p>Имя пользователя: {{userName}}</p>
-              <p>Возраст пользователя: {{userAge}}</p>`,
-    styles: [` p {color:blue;
-    	    		font-size:20px}`]
+    templateUrl:'./child.component.html' ,
+    styleUrls: ['./app.component.css']
 })
 export class ChildComponent { 
-   @Input() userName: string;
-   @Input() userAge: number;
+   /*@Output() onChanged = new EventEmitter<boolean>();
+    change(increased:any) {
+        this.onChanged.emit(increased);*/
+    @Input() userName:string;
+    @Output() userNameChange = new EventEmitter<string>();
+    onNameChange(model: string){
+         
+        this.userName = model;
+        this.userNameChange.emit(model);
+}
 }
