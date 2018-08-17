@@ -1066,7 +1066,712 @@ module.exports = {
     new UglifyJSPlugin()
   ]
 }
-Относительные пути в Angular 5
+
+==========================================================================================
+==========================================================================================
+..................................Привязка...............................................
+=========================================================================================
+
+    
+
+ 
+Angular поддерживает механизм привязки, благодаря которому различные части шаблона могут быть привязаны к некоторым значениям, определенным в компоненте.
+
+В Angular есть четыре формы привязки данных:
+
+Привязка элемента DOM к значению компонента (односторонняя). В двойных фигурных скобках указывается выражение, к которому идет привязка: {{выражение}}. Например:
+
+1
+<h1>Добро пожаловать {{name}}!</h1>
+Привязка свойства элемента html к значению компонента (односторонняя). Например:
+
+2
+<input type="text" [value]="name" />
+Привязка метода компонента к событию в DOM (генерация события в DOM вызывает метод на компоненте)(односторонняя). Например:
+
+3
+<button (click)="addItem(text, price)">Добавить</button>
+Двусторонняя привязка, когда элемент DOM привязан к значению на компоненте, при этом изменения на одном конце привязки сразу приводят к изменениям на другом конце. Например:
+
+4
+<input [(ngModel)]="name" placeholder="name">
+Первый вид привязки заключается в использовании фигурных скобок, в которые передается значение из компонента. Например, пусть у нас будет определен следующий компонент:
+
+
+import { Component } from '@angular/core';
+      
+@Component({
+    selector: 'my-app',
+    template: `<p>Имя: {{name}}</p>
+                <p>Возраст: {{age}}</p>`
+})
+export class AppComponent { 
+    name = "Tom";
+    age = 25;
+}
+И при запуске приложения выражения типа {{name}} будут автоматически заменяться соответствующими значениями, определенными в компоненте:
+
+Data Binding in Angular 2
+И если в процессе работы приложения свойства name и age в компоненте изменят свое значение, то также изменится значение в разметке html, которая привязана к этим свойствам.
+
+Привязка свойств элементов html
+Мы можем привязать значение к свойству элемента html. В этом случае свойство указывается в квадратных скобках:
+
+
+import { Component } from '@angular/core';
+      
+@Component({
+    selector: 'my-app',
+    template: `<input type="text" [value]="name" />`
+})
+export class AppComponent { 
+    name = "Tom";
+}
+Хотя в данном случае мы могли бы написать и так:
+
+1
+template: `<input type="text" value="{{name}}" />`
+Но важно понимать, что здесь идет привязка не к атрибуту, а именно к свойству элемента в javascript, который представляет данный элемент html. Например, мы могли бы привязать некоторое значение к текстовому содержимому элемента:
+
+1
+template: `<p [textContent]="name"></p>`
+У html-элемента <p> нет атрибута textContent. Зато у интерфейса Node, который представляет данный элемент DOM, есть свойство textContent, к которому мы можем осуществить привязку.
+
+Привязка к событию
+Привязка к событию позволяет связать с событием элемента метод из компонента:
+
+
+import { Component } from '@angular/core';
+      
+@Component({
+    selector: 'my-app',
+    template: `<p>Количество кликов {{count}}</p>
+                <button (click)="increase()">Click</button>`
+})
+export class AppComponent { 
+    count: number=0;
+    increase() : void {
+        this.count++;
+    }
+}
+В шаблоне определен элемент button, у которого есть событие click. Для обработки этого события в классе AppComponent определен метод increase(), который увеличивает количество условных кликов. В итоге при нажатии на кнопку сработает данный метод:
+
+Event Binding in Angular 2
+В качестве альтернативы мы могли бы установить привязку к событию так:
+
+
+template: `<p>Количество кликов {{count}}</p>
+                <button on-click="increase()">Click</button>`
+После префикса on через дефис идет название события.
+
+Мы также можем передавать информацию о событии через объект $event:
+
+
+import { Component } from '@angular/core';
+       
+@Component({
+    selector: 'my-app',
+    template: `<p>Количество кликов {{count}}</p>
+                <button (click)="increase($event)">Click</button>`
+})
+export class AppComponent { 
+    count: number=0;
+    increase($event) : void {
+        this.count++;
+        console.log($event);
+    }
+}
+$event - это встроенный объект, через который Angular передает информацию о событии.
+
+Двусторонняя привязка
+Двусторонняя привязка позволяет динамически менять значения на одном конце привязки при изменениях на другом конце. Как правило, двусторонняя привязка применяется при работе с элементами ввода, например, элементами типа input. Например:
+
+import { Component } from '@angular/core';
+      
+@Component({
+    selector: 'my-app',
+    template: `<p>Привет {{name}}</p>
+                <input type="text" [(ngModel)]="name" /> <br><br>
+                <input type="text" [(ngModel)]="name" />`
+})
+export class AppComponent { 
+    name:string="Tom";
+}
+Здесь к свойству name класса AppComponent привязаны сразу три элемента: параграф и два текстового поля. Тектовые поля связаны со свойством name двусторонней привязкой. Для ее создания применяется выражение [(ngModel)]="выражение".
+
+В итоге изменения в текстовом поле будут сказываться на тексте во втором текстовом поле и параграфе.
+
+=========================================================================
+=========================================================================
+.................Работа с компонентами....................................
+=========================================================================
+
+
+Кроме основных компонентов в приложении мы также можем определять какие-то вспомогательные компоненты, которые управляют каким-то участком разметки html. Более того в приложении на странице может быть ряд разных блоков с какой-то определенной задачей. И для каждого такого блока можно создать отдельный компонент, чтобы упростить управление блоками на странице.
+
+Добавим в проект второй компонент. Для этого добавим в папку src/app новый файл child.component.ts. 
+Взаимодействие между компонентами в Angular
+Определим в файле child.component.ts следующий код:
+
+
+import { Component } from '@angular/core';
+      
+@Component({
+    selector: 'child-comp',
+    template: `<h2>Добро пожаловать {{name}}!</h2>`,
+    styles: [`h2, p {color:red;}`]
+})
+export class ChildComponent { 
+    name= "Евгений";
+}
+
+Здесь определен класс ChildComponent. Опять же чтобы сделать этот класс компонентом, необходимо применить декоратор @Component.
+
+Компонент будет управлять разметкой html, которая будет вставляться в элемент child-comp.
+
+Шаблон представления будет просто выводить заголовок. В заголовке выводится имя, заданное через переменную name.
+
+И кроме того, здесь определены стили для элементов h2 и p.
+
+Теперь изменим код компонента AppComponent в файле app.component.ts:
+
+
+import { Component } from '@angular/core';
+      
+@Component({
+    selector: 'my-app',
+    template: `<child-comp></child-comp>
+                <p>Привет {{name}}</p>`,
+    styles: [`h2, p {color:#333;}`]
+})
+export class AppComponent { 
+    name = 'Петр';
+}
+
+Это основной компонент, который будет запускаться при запуске приложения, и через него мы будем использовать остальные компоненты. Так, компонент ChildComponent будет загружаться в элемент child-comp. И в шаблоне компонента AppComponent как раз определен такой элемент.
+
+Кроме того, компонент определяет стили для тех же элементов на странице, и также, как и ChildComponent, определяет свойство name, только с другим значением.
+
+Чтобы использовать все определенные в проекте компоненты, они должны быть указаны в главном модуле приложения. Определим в файле app.module.ts следующий модуль:
+
+
+import { NgModule }      from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule }   from '@angular/forms';
+import { AppComponent }   from './app.component';
+import { ChildComponent }   from './child.component';
+@NgModule({
+    imports:      [ BrowserModule, FormsModule ],
+    declarations: [ AppComponent, ChildComponent ],
+    bootstrap:    [ AppComponent ]
+})
+export class AppModule { }
+
+Запустим проект
+
+Работа с компонентами в Angular 5
+Результат показывает, что несмотря на то, что один компонент как бы включен в другой с помощью тега <child-comp>, но тем не менее стили одного компонента не применяются к другому. Каждый компонент очерчивает свою область с помощью шаблона, свое представление, которым он и управляет.
+
+Также каждый компонент использует свое значение свойства name. То есть компоненты фактически существуют относительно независимо.
+
+Даже если мы уберем из ChildComponent определение свойства name:
+
+
+import { Component } from '@angular/core';
+      
+@Component({
+    selector: 'child-comp',
+    template: `<h2>Добро пожаловать {{name}}!</h2>`,
+    styles: [`h2, p {color:red;}`]
+})
+export class ChildComponent { }
+То родительский или главный компонент, все равно не окажет влияния на ChildComponent:
+
+Множество компонентов в Angular 2
+Хотя может показаться, что ChildComponent для выражения {{name}} в своем шаблоне должен использовать свойство name из родительского компонента AppComponent. Но это не так. Компоненты относительно независимы друг от друга.
+
+ng-content
+Элемент ng-content позволяет внедрять родительским компонентам код html в дочерние компоненты. Так, изменим компонент ChildComponent следующим образом:
+
+
+import { Component } from '@angular/core';
+      
+@Component({
+    selector: 'child-comp',
+    template: `<ng-content></ng-content>
+                <p>Привет {{name}}</p>`,
+    styles: [`h2, p {color:navy;}`]
+})
+export class ChildComponent { 
+    name= "Евгений";
+}
+Вместо элемента <ng-content> извне можно будет передать любое содержимое.
+
+И изменим код главного компонента AppComponent:
+
+
+import { Component } from '@angular/core';
+      
+@Component({
+    selector: 'my-app',
+    template: `<child-comp><h2>Добро пожаловать {{name}}!</h2></child-comp>`,
+    styles: [`h2, p {color:#333;}`]
+})
+export class AppComponent { 
+    name = 'Tom';
+}
+В элемент <child-comp> здесь передается заголовок <h2>Добро пожаловать {{name}}!</h2>. Затем этот заголовок будет вставляться в дочерний компонент ChildComponent на место <ng-content>:
+
+ng-content в Angular 2
+Причем управлять разметкой, которая вставляется в <ng-content>, будет управлять AppComponent. Поэтому именно этот компонент задает стили и выражения привязки для вставляемого куска html.
+===========================================================================================
+===========================================================================================
+..........................Взаимодействие между компонентами................................
+===========================================================================================
+
+    
+
+ 
+В прошлой теме было рассмотрено, как вызывать компонент из главного компонента. Однако по умолчанию эти компоненты никак не взаимодействуют, они независимы. Каждый компонент определяет свои выражения привязки. Однако что, если мы хотим свойства дочернего компонента привязать к свойствам из главного компонента? Для этого определим следующий дочерний компонент:
+
+
+import { Input, Component} from '@angular/core';
+      
+@Component({
+    selector: 'child-comp',
+    template: `<p>Имя пользователя: {{userName}}</p>
+              <p>Возраст пользователя: {{userAge}}</p>`
+})
+export class ChildComponent{ 
+    @Input() userName: string;
+    @Input() userAge: number;
+}
+Ключевым моментом здесь является определение входных свойств с помощью декоратора @Input(). И естественно чтобы использовать декоратор, его надо импортировать:
+
+1
+import { Input} from '@angular/core';
+Ключевой особенностью таких входных свойств является то, что они могут устанавливаться извне, например, из главного компонента.
+
+Теперь изменим код главного компонента:
+
+
+import { Component } from '@angular/core';
+      
+@Component({
+    selector: 'my-app',
+    template: `<child-comp [userName]="name" [userAge]="age"></child-comp>
+                <input type="text" [(ngModel)]="name" />`
+})
+export class AppComponent { 
+    name:string="Tom";
+    age:number = 24;
+}
+Поскольку свойство userName в дочернем компоненте определено как входное с декоратором Input, то в главном компоненте мы можем его использовать как атрибут и фактически применить привязку свойств:
+
+1
+<child-comp [userName]="name" [userAge]="age"></child-comp>
+То же самое касается и свойства userAge.
+
+В итоге свойства userAge и userName будут привязаны к значениям из главного компонента:
+
+Взаимодействие компонентов в Angular 2
+Привязка к сеттеру
+Кроме привязки к свойству мы можем установить привязку к сеттеру дочернего компонента. (Подробнее про сеттеры и вообще про модификаторы доступа можно посмотреть здесь). Это может быть необходимо, когда в дочернем компоненте надо осуществлять проверку или даже модификацию значения, получаемого от главного компонента.
+
+Например, пусть в главном компоненте устанавливается возраст пользователя:
+
+
+import { Component } from '@angular/core';
+       
+@Component({
+    selector: 'my-app',
+    template: `<child-comp [userName]="name" [userAge]="age"></child-comp>
+                <input type="number" [(ngModel)]="age" />`
+})
+export class AppComponent { 
+    name:string="Tom";
+    age:number = 24;
+}
+А в дочернем компоненте будем получать переданный возраст через сеттер:
+
+
+import { Input, Component} from '@angular/core';
+       
+@Component({
+    selector: 'child-comp',
+    template: `<p>Имя пользователя: {{userName}}</p>
+              <p>Возраст пользователя: {{userAge}}</p>`
+})
+export class ChildComponent{ 
+    @Input() userName: string;
+     _userAge: number;
+      
+    @Input()
+    set userAge(age:number) {
+        if(age<0)
+            this._userAge=0;
+        else if(age>100)
+            this._userAge=100;
+        else
+            this._userAge = age;
+  }
+  get userAge() { return this._userAge; }
+}
+В главном компоненте мы можем ввести любое значение в поле ввода, в том числе и отрицательные числа. В дочернем компоненте через сеттер проверяем введенное значение и при необходимости корректируем его.
+==================================================================
+==================================================================
+==================================================================
+.............Привязка к событиям дочернего компонента..............
+...................................................................
+
+
+
+ 
+Еще одной формой взаимодействия представляет привязка к событиям дочернего компонента. Так, определим следующий дочерний компонент:
+
+
+import { Component, EventEmitter, Input, Output} from '@angular/core';
+       
+@Component({
+    selector: 'child-comp',
+    template: `<button (click)="change(true)">+</button>
+               <button (click)="change(false)">-</button>`
+})
+export class ChildComponent{ 
+     
+    @Output() onChanged = new EventEmitter<boolean>();
+    change(increased:any) {
+        this.onChanged.emit(increased);
+    }
+}
+В этом компоненте у кнопки используется событие click, которое вызывает метод change, передавая ему значение true или false. Здесь же в дочернем компоненте мы можем и обработать события. Но если мы должны передавать его родительскому компоненту, то для этого нам надо использовать свойство типа EventEmitter, коим здесь является свойство onChanged. Поскольку мы будем передавать значение типа true или false, то данное свойство типизируется типом boolean. При этом свойство onChanged должно быть выходным, поэтому оно помечается с помощью декоратора @Output.
+
+Фактически свойство onChanged будет представлять собой событие, которое вызывается в методе change() по клику на кнопку и передается главному компоненту.
+
+Далее определим код главного компонента:
+
+
+import { Component } from '@angular/core';
+       
+@Component({
+    selector: 'my-app',
+    template: `<h2>Количество кликов: {{clicks}}</h2>
+              <child-comp (onChanged)="onChanged($event)"></child-comp>`
+})
+export class AppComponent { 
+     
+    clicks:number = 0;
+    onChanged(increased:any){
+        increased==true?this.clicks++:this.clicks--;
+    }
+}
+С помощью выражения (onChanged)="onChanged($event)" привязываем метод onChanged к событию onChanged(), вызываемое в дочернем компоненте. Параметр $event инкапсулирует все данные, которые передаются из дочернего компонента.
+
+В итоге при нажатии на кнопки в дочернем компоненте событие нажатия будет транслироваться главному копоненту, который будет в зависимости от переданного значения увеличивать или уменьшать счетчик.
+
+Передача событий между компонентами в Angular 2
+Двусторонняя привязка
+В примере выше мы определяли привязку к событию дочернего компонента: при возникновении события в дочернем компоненте мы обрабатывали это событие в главном компоненте с помощью метода. Но мы также можем использовать двустороннюю привязку между свойствами главного и дочернего компонента. Например, пусть дочерний компонент будет выглядеть следующим образом:
+
+
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+       
+@Component({
+    selector: 'child-comp',
+    template: `<input [ngModel]="userName" (ngModelChange)="onNameChange($event)" />`
+})
+export class ChildComponent{ 
+     
+    @Input() userName:string;
+    @Output() userNameChange = new EventEmitter<string>();
+    onNameChange(model: string){
+         
+        this.userName = model;
+        this.userNameChange.emit(model);
+    }
+}
+Здесь определено входное свойство userName, к которому привязано текстовое поле input. Для связи используется атрибут [ngModel], который связывает значение атрибута value у текстового поля со свойством userName.
+
+Для отслеживания изменения модели этого поля с помощью атрибута (ngModelChange) привязываем метод, который срабатывает при изменении значения. То есть ngModelChange - это фактически событие изменения введенного значения, поэтому здесь действует привязка к событию.
+
+Так как у нас здесь односторонняя привязка, то в методе-обработчике получаем введенное значение и изменяем свойство userName и генерируем событие userNameChange, которое определено как выходной параметр.
+
+То есть здесь извне мы получаем значение для свойства userName и устанавливаем его для текстового поля. При вводе пользователя в это поле генерируем во вне событие userNameChange.
+
+Теперь определим код главного компонента:
+
+
+import { Component} from '@angular/core';
+       
+@Component({
+    selector: 'my-app',
+    template: `<child-comp [(userName)]="name"></child-comp>// я код добавила в отдельный 
+    файл child.component.html
+                <div>Выбранное имя: {{name}}</div>`
+})
+export class AppComponent { 
+ 
+    name: string = "Tom";
+}
+Здесь устанавливается двусторонняя привязка свойств userName дочернего компонента и свойства name главного компонента. При этом не надо уже вручную обрабатывать событиe userNameChange, все будет делаться автоматически.
+
+==================================================================================
+==================================================================================
+==================================================================================
+......................Жизненный цикл компонента....................................
+...................................................................................
+
+
+    
+
+ 
+После создания компонента фреймворк Angular вызывает у этого компонента ряд методов, которые представляют различные этапы жизненного цикла:
+
+Жизненный цикл компонентов в Angular 5
+-ngOnChanges: вызывается до метода ngOnInit() при начальной установке свойств, которые связаны механизмом привязки, а также при любой их переустановке или изменении их значений. Данный метод в качестве параметра принимает объект класса SimpleChanges, который содержит предыдущие и текущие значения свойства.
+
+-ngOnInit: вызывается один раз после установки свойств компонента, которые участвуют в привязке. Выполняет инициализацию компонента
+
+-ngDoCheck: вызывается при каждой проверке изменений свойств компонента сразу после методов ngOnChanges и ngOnInit
+
+-ngAfterContentInit: вызывается один раз после метода ngDoCheck() после вставки содержимого в представление компонента кода html
+
+-ngAfterContentChecked: вызывается фреймворком Angular при проверке изменений содержимого, которое добавляется в представление компонента. Вызывается после метода ngAfterContentInit()  и после каждого последующего вызова метода ngDoCheck().
+
+-ngAfterViewInit: вызывается фреймворком Angular после инициализации представления компонента, а также представлений дочерних компонентов. Вызывается только один раз сразу после первого вызова метода ngAfterContentChecked()
+
+-ngAfterViewChecked: вызывается фреймворком Angular после проверки на изменения в представлении компонента, а также проверки представлений дочерних компонентов. Вызывается после первого вызова метода ngAfterViewInit() и после каждого последующего вызова ngAfterContentChecked()
+
+-ngOnDestroy: вызывается перед тем, как фреймворк Angular удалит компонент.
+
+Каждый такой метод определен в отдельном интерфейсе, который называется по имени метода без префикса "ng". Например, метод ngOnInit определен в интерфейсе OnInit. Поэтому, если мы хотим отслеживать какие-то этапы жизненного цикла компонента, то класс компонента должен применять соответствующие интерфейсы:
+
+
+import { Component, OnInit, OnDestroy } from '@angular/core';
+      
+@Component({
+    selector: 'my-app',
+    template: `<p>Hello Angular 2</p>`
+})
+export class AppComponent implements OnInit, OnDestroy { 
+    name:string="Tom";
+     
+    constructor(){ this.log(`constructor`); }
+    ngOnInit() { this.log(`onInit`); }
+ 
+    ngOnDestroy() { this.log(`onDestroy`); }
+ 
+    private log(msg: string) {
+        console.log(msg);
+    }
+}
+ngOnInit
+Метод ngOnInit() применяется для какой-то комплексной инициализации компонента. Здесь можно выполнять загрузку данных с сервера или из других источников данных.
+
+ngOnInit() не аналогичен конструктору. Конструктор также может выполнять некоторую инициализацию объекта, в то же время что-то сложное в конструкторе делать не рекомендуется. Конструктор должен быть по возможности простым и выполнять самую базовую инициализацию. Что-то более сложное, например, загрузку данных с сервера, которая может занять продолжительное время, лучше делать в методе ngOnInit.
+
+ngOnDestroy
+Метод ngOnDestroy() вызывается перед удалением компонента. И в этом методе можно освобождать те используемые ресурсы, которые не удаляются автоматически сборщиком мусора. Здесь также можно удалять подписку на какие-то события элементов DOM, останавливать таймеры и т.д.
+
+ngOnChanges
+Метод ngOnChanges() вызывается перед методом ngOnInit() и при изменении свойств в привязке. С помощью параметра SimpleChanges в методе можно получить текущее и предыдущее значение измененного свойства. Например, пусть у нас будет следующий дочерний компонент:
+
+
+
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+      
+@Component({
+    selector: 'child-comp',
+    template: `<p>Привет {{name}}</p>`
+})
+export class ChildComponent implements OnInit, OnChanges { 
+    @Input() name: string;
+ 
+    constructor(){ this.log(`constructor`); }
+    ngOnInit() { this.log(`onInit`); }
+     
+    ngOnChanges(changes: SimpleChanges) {
+      for (let propName in changes) {
+        let chng = changes[propName];
+        let cur  = JSON.stringify(chng.currentValue);
+        let prev = JSON.stringify(chng.previousValue);
+        this.log(`${propName}: currentValue = ${cur}, previousValue = ${prev}`);
+      }
+    }
+    private log(msg: string) {
+        console.log(msg);
+    }
+}
+И пусть этот компонент используется в главном компоненте:
+
+
+
+import { Component, OnChanges, SimpleChanges} from '@angular/core';
+      
+@Component({
+    selector: 'my-app',
+    template: `<child-comp [name]="name"></child-comp>
+                <input type="text" [(ngModel)]="name" />
+                <input type="number" [(ngModel)]="age" />`
+})
+export class AppComponent implements OnChanges { 
+    name:string="Tom";
+    age:number = 25;
+    ngOnChanges(changes: SimpleChanges) {
+      for (let propName in changes) {
+        let chng = changes[propName];
+        let cur  = JSON.stringify(chng.currentValue);
+        let prev = JSON.stringify(chng.previousValue);
+        this.log(`${propName}: currentValue = ${cur}, previousValue = ${prev}`);
+      }
+    }
+ 
+    private log(msg: string) {
+        console.log(msg);
+    }
+}
+То есть значение для свойства name передается в дочерний компонент ChildComponent из главного - AppComponent. Причем в главном компоненте тоже реализован метод ngOnChanges().
+
+И если мы запустим приложение, то сможем заметить, что при каждом изменении свойства name в главном компоненте вызывается метод ngOnChanges:
+
+OnChanges в Angular 2
+В то же время надо отметить, что данный метод вызывается только при изменении входных свойств с декоратором @Input. Поэтому изменение свойства age в AppComponent здесь не будет отслеживаться.
+
+Реализация всех методов
+Определим следующий дочерний компонент:
+
+import { Component, 
+         Input, 
+         OnInit,
+         DoCheck,
+         OnChanges,
+        AfterContentInit, 
+        AfterContentChecked, 
+        AfterViewChecked, 
+        AfterViewInit} from '@angular/core';
+      
+@Component({
+    selector: 'child-comp',
+    template: `<p>Привет {{name}}</p>`
+})
+export class ChildComponent implements OnInit,
+         DoCheck,
+         OnChanges,
+        AfterContentInit, 
+        AfterContentChecked, 
+        AfterViewChecked, 
+        AfterViewInit  { 
+    @Input() name: string;
+    count:number=1;
+     
+    ngOnInit() {
+       
+      this.log(`ngOnInit`);
+    }
+    ngOnChanges() {
+       
+      this.log(`OnChanges`);
+    }
+    ngDoCheck() {
+       
+      this.log(`ngDoCheck`);
+    }
+    ngAfterViewInit() {
+       
+      this.log(`ngAfterViewInit`);
+    }
+    ngAfterViewChecked() {
+       
+      this.log(`ngAfterViewChecked`);
+    }
+    ngAfterContentInit() {
+       
+      this.log(`ngAfterContentInit`);
+    }
+    ngAfterContentChecked() {
+       
+      this.log(`ngAfterContentChecked`);
+    }
+ 
+    private log(msg: string) {
+        console.log(this.count + ". " + msg);
+        this.count++;
+    }
+}
+И используем этот компонент в главном компоненте:
+
+
+import { Component} from '@angular/core';
+      
+@Component({
+    selector: 'my-app',
+    template: `<child-comp [name]="name"></child-comp>
+                <input type="text" [(ngModel)]="name" />`
+})
+export class AppComponent{ 
+     name:string="Tom";
+}
+И при обращении к приложению мы получим следующую цепочку вызовов.
+
+
+
+ 
+
+
+    
+
+ 
+
+ 
+
+
+
+
+
+ 
+
+
+    
+
+ 
+
+ 
+
+ 
+
+
+
+
+
+ 
+
+
+  
+
+ 
+
+
+
+
+ 
+
+
+ 
+
+
+
+
+
+ 
+
+    
+
+ 
+
+ 
+
+ 
+
 
  
 
