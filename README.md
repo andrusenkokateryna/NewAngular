@@ -69,3 +69,5 @@
 	23) ngAfterViewChecked;
 
 	24) ngOnDestroy;
+
+	25) Реализация всех методов;
