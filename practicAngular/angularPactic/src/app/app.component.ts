@@ -8,16 +8,19 @@ import { Component } from '@angular/core';
                 <input type="text" [(ngModel)]="name" />`,
     styles: [`p {color:red;}`]*/
 })
-export class AppComponent {
+export class AppComponent  {
   title = 'angularPactic';
   name:string = "Kate";
   age = 24;
+   
+    
   /*count: number=0;
   increase() : void {
   this.count++;*/
-   clicks:number = 0;
+  /* clicks:number = 0;
     onChanged(increased:any){
      increased==true?this.clicks++:this.clicks--;
-    }
+    }*/
 
 }
+

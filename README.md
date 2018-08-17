@@ -51,3 +51,21 @@
 	15) свойство типа EventEmitter;
 
 	16) Двусторонняя привязка;
+
+## Жизненный цикл компонента:
+
+	17) ngOnChanges;
+
+	18) ngOnInit;
+
+	19) ngDoCheck;
+
+	20) ngAfterContentInit;
+
+	21) ngAfterContentChecked;
+
+	22) ngAfterViewInit;
+
+	23) ngAfterViewChecked;
+
+	24) ngOnDestroy;

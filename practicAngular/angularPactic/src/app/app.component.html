@@ -11,7 +11,7 @@
     <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
   </div>
 </div>
-<div class="container">
+<!-- <div class="container">
 <p>Имя: {{name}}</p>
 <p>Возраст: {{age}}</p>
 <p>Количество кликов: {{count}}</p>
@@ -20,15 +20,19 @@
                 <input type="text" [(ngModel)]="name" /> <br><br>
                 <input type="text" [(ngModel)]="name" />
 </div>
-<!-- <div class="click-box">
+<div class="click-box">
 <h2>Количество кликов: {{clicks}}</h2>
 <child-comp (onChanged)="onChanged($event)"></child-comp>
 
-</div> -->
+</div>
 <div class="changeName">
 <child-comp [(userName)]="name"></child-comp>
 <div>Выбранное имя: {{name}}</div>
-</div>
+</div>-->
+<p>hello angular! 2</p>
+<child-comp [name]="name"></child-comp>
+<input type="text" [(ngModel)]="name"  class="input" />
+
 
 
 
