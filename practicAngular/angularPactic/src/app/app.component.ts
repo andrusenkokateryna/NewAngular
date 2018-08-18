@@ -11,7 +11,12 @@ export class AppComponent  {
   title = 'angularPactic';
   name:string = "Kate";
   age = 24;
- 
 
+  visibility: boolean = true;
+    // переключаем переменную
+    toggle(){
+    this.visibility=!this.visibility;
+ 
+}
 
 }

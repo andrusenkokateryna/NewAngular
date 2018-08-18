@@ -77,3 +77,9 @@
 	26) ViewChild;
 
 	27) ContentChild;
+
+# Директивы
+
+## ngClass и ngStyle:
+
+	28) Динамическое изменение стилей;
