@@ -1,5 +1,6 @@
 import { Component} from '@angular/core';
-//import { ChildComponent} from './child.component';
+import { ChildComponent} from './child.component';
+import { BoldDirective} from './bold.directive';
 
 @Component({
   selector: 'app-root',
