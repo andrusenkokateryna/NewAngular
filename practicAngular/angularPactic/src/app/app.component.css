@@ -16,13 +16,22 @@
 }; */
 
 button {
-	padding: 10px;
+	padding: 5px;
 	border: 2px solid cyan;
 	background: cyan;
 	color: #000;
 	font-size: 25px;
+	text-align: center;
+	margin-bottom: 20px;
+	margin-left: 5px;
+	border: 1px solid blue;
+	
 
 
+}
+
+.butt {
+	margin-left: 650px;
 }
 
 .container {
@@ -53,7 +62,7 @@ p {
 	color: #666;
 }
 
-.input {
+input {
 	text-align: center;
 	margin-left: 600px;
 	margin-bottom: 20px;

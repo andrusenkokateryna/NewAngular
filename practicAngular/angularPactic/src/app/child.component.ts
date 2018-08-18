@@ -1,4 +1,4 @@
-import {  Component, 
+/*import {  Component, 
          Input, 
          OnInit,
          DoCheck,
@@ -6,54 +6,22 @@ import {  Component,
         AfterContentInit, 
         AfterContentChecked, 
         AfterViewChecked, 
-        AfterViewInit} from '@angular/core';
+        AfterViewInit, 
+        ContentChild, 
+        ElementRef} from '@angular/core';*/
+ import { Component, ContentChild, ElementRef } from '@angular/core';
       
 @Component({
     selector: 'child-comp',
     templateUrl:'./child.component.html' ,
     styleUrls: ['./app.component.css']
 })
-export class ChildComponent implements OnInit,
-         DoCheck,
-         OnChanges,
-        AfterContentInit, 
-        AfterContentChecked, 
-        AfterViewChecked, 
-        AfterViewInit   { 
-    @Input() name: string;
-    count:number=1;
+export class ChildComponent { 
+    @ContentChild("headerContent")
+    header: ElementRef;
      
-    ngOnInit() {
-       
-      this.log(`ngOnInit`);
-    }
-    ngOnChanges() {
-       
-      this.log(`OnChanges`);
-    }
-    ngDoCheck() {
-       
-      this.log(`ngDoCheck`);
-    }
-    ngAfterViewInit() {
-       
-      this.log(`ngAfterViewInit`);
-    }
-    ngAfterViewChecked() {
-       
-      this.log(`ngAfterViewChecked`);
-    }
-    ngAfterContentInit() {
-       
-      this.log(`ngAfterContentInit`);
-    }
-    ngAfterContentChecked() {
-       
-      this.log(`ngAfterContentChecked`);
-    }
- 
-    private log(msg: string) {
-        console.log(this.count + ". " + msg);
-        this.count++;
+    change() { 
+        console.log(this.header); 
+        this.header.nativeElement.textContent = "Hello to world!"; 
     }
 }

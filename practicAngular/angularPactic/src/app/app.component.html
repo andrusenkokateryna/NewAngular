@@ -29,9 +29,21 @@
 <child-comp [(userName)]="name"></child-comp>
 <div>Выбранное имя: {{name}}</div>
 </div>-->
-<p>hello angular! 2</p>
+<!-- <p>hello angular! 2</p>
 <child-comp [name]="name"></child-comp>
 <input type="text" [(ngModel)]="name"  class="input" />
+<p #userName>{{name}}</p>
+<p>{{userName.textContent}}</p>
+<input type="text" [(ngModel)]="name" />
+
+<child-comp #counter></child-comp>
+<button (click)="counter.increment()" class="butt">+</button>
+<button (click)="counter.decrement()">-</button>
+<p #nameText>{{name}}</p>
+<p>{{nameText.textContent}}</p> -->
+<child-comp>
+<h3 #headerContent>Добро пожаловать {{name}}!</h3>
+</child-comp>
 
 
 
