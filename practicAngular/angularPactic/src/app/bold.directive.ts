@@ -1,4 +1,4 @@
-import {Directive, ElementRef, Renderer2, HostListener, /*HostBinding*/ } from '@angular/core';
+import {Directive, ElementRef, Renderer2, HostListener, Input, HostBinding, OnInit } from '@angular/core';
  
 @Directive({
     selector: '[bold]',
@@ -7,21 +7,44 @@ import {Directive, ElementRef, Renderer2, HostListener, /*HostBinding*/ } from '
         '(mouseleave)': 'onMouseLeave()'
     }
 })
-export class BoldDirective{
-      
-    constructor(private element: ElementRef, private renderer: Renderer2){
-          
-        this.renderer.setStyle(this.element.nativeElement, "cursor", "pointer");
+export class BoldDirective implements OnInit{
+     
+    @Input() selectedSize = "18px";
+    @Input() defaultSize = "16px";
+     
+    private fontSize : string;
+    private fontWeight = "normal";
+
+    ngOnInit(){
+        this.fontSize = this.defaultSize;
+    }
+    constructor(){}
+     
+    @HostBinding("style.fontSize") get getFontSize(){
+         
+        return this.fontSize;
     }
      
-    onMouseEnter(){
-        this.setFontWeight("bold");
+    @HostBinding("style.fontWeight") get getFontWeight(){
+         
+        return this.fontWeight;
     }
-    onMouseLeave(){
-        this.setFontWeight("normal");
+     
+    @HostBinding("style.cursor") get getCursor(){
+        return "pointer";
     }
-    private setFontWeight(val: string) {
-        this.renderer.setStyle(this.element.nativeElement, "font-weight", val);
-    }
-}
 
+     
+    @HostListener("mouseenter") onMouseEnter() {
+        this.fontWeight ="bold";
+        this.fontSize = this.selectedSize;
+        this.color="red"
+    }
+ 
+    @HostListener("mouseleave") onMouseLeave() {
+        this.fontWeight = "normal";
+        this.fontSize = this.defaultSize;
+    }
+
+
+}
