@@ -1,6 +1,7 @@
 import { Component} from '@angular/core';
 import { ChildComponent} from './child.component';
 import { BoldDirective} from './bold.directive';
+import {WhileDirective} from './while.directive';
 
 @Component({
   selector: 'app-root',
@@ -27,4 +28,9 @@ export class AppComponent  {
 
     items =["Apple iPhone 7", "Huawei Mate 9", "Samsung Galaxy S7", "Motorola Moto Z"];
     count: number = 5;
+
+    condition1: boolean=true;
+    toggle3(){
+        this.condition1=!this.condition1;
+    }
 }

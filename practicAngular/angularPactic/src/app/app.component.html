@@ -101,4 +101,12 @@
   <ng-template ngSwitchDefault>{{count * 2000}}</ng-template>
  </div>
 
+ <p *while="condition1" class="toggle3">
+      First ipsum dolor sit amet, consectetur adipisicing elit. Eaque impedit adipisci repellendus ullam saepe distinctio est cumque. Suscipit animi asperiores iure, delectus quaerat corporis!
+    </p>
+    <p *while="!condition1" class="toggle3a">
+      Second ipsum dolor sit amet, consectetur adipisicing elit. Ad architecto laudantium, sequi eaque eius culpa id fugiat magnam tempora facere optio, iusto! Unde, dicta!
+    </p>
+    <button (click)="toggle3()">Toggle3</button>
+
 
