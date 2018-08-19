@@ -83,3 +83,22 @@
   <p>Angular 2 представляет модульную архитектуру приложения</p>
 </div>
 
+<p *ngIf="condition" style="color:orange;font-family: cursive; font-size: 25px;">
+  Привет мир!!!
+</p>
+<p *ngIf="!condition" style="color: #78a; font-family: fantasy; font-size: 25px;">
+  Пока мир!
+</p>
+<button (click)="toggle2()">Toggle2</button>
+
+<ul>
+   <li *ngFor="let item of items">{{item}}</li>
+</ul>
+
+<div [ngSwitch]="count" class="switch">
+  <ng-template ngSwitchCase="1">{{count * 10}}</ng-template>
+  <ng-template ngSwitchCase="3">{{count * 100}}</ng-template>
+  <ng-template ngSwitchDefault>{{count * 2000}}</ng-template>
+ </div>
+
+

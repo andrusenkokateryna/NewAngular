@@ -94,3 +94,17 @@ h3 {
  .invisible {
  	display:none;
  }
+
+ ul {
+ 	margin-left: 40%;
+ 	font-size: 20px;
+ 	margin-bottom: 20px;
+ 	color: #623;
+ }
+
+ .switch {
+ 	text-align: center;
+ 	margin-bottom: 20px;
+ 	font-size: 20px;
+ 	font-weight: bold;
+ }

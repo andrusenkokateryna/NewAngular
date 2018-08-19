@@ -38,7 +38,7 @@ export class BoldDirective implements OnInit{
     @HostListener("mouseenter") onMouseEnter() {
         this.fontWeight ="bold";
         this.fontSize = this.selectedSize;
-        this.color="red"
+        
     }
  
     @HostListener("mouseleave") onMouseLeave() {

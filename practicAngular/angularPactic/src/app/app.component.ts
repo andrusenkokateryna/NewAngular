@@ -17,7 +17,14 @@ export class AppComponent  {
     // переключаем переменную
     toggle(){
     this.visibility=!this.visibility;
- 
 }
 
+     condition: boolean=true;
+     
+    toggle2(){
+        this.condition=!this.condition;
+    }
+
+    items =["Apple iPhone 7", "Huawei Mate 9", "Samsung Galaxy S7", "Motorola Moto Z"];
+    count: number = 5;
 }
