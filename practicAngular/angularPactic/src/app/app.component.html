@@ -8,7 +8,11 @@
 <div class="card" style="width: 18rem;">
   <img class="card-img-top" src="http://forumsmile.ru/u/5/9/8/5989edbeded5c354f4d5b1bd0e8360f2.jpg" alt="Card image cap">
   <div class="card-body">
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    <p class="card-text">С добрым утром! Солнце встало –<br>
+Льет в окошко свет небесный.<br>
+Сбрось быстрее одеяло,<br>
+Ждет тебя денек чудесный.
+</p>
   </div>
 </div>
 <!-- <div class="container">
@@ -109,4 +113,40 @@
     </p>
     <button (click)="toggle3()">Toggle3</button>
 
+   <div class="panel">
+        <div class="form-inline">
+            <div class="form-group">
+                <div class="col-md-8">
+                    <input class="form-control" [(ngModel)]="name1" placeholder = "Модель" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-6">
+                    <input type="number" class="form-control" [(ngModel)]="price" placeholder="Цена" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-8">
+                    <button class="btn btn-default" (click)="addItem(name1, price)">Добавить</button>
+                </div>
+            </div>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Модель</th>
+                    <th>Цена</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item1 of items1">
+                    <td>{{item1.name1}}</td>
+                    <td>{{item1.price}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <data-comp></data-comp>
+    
 

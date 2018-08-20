@@ -2576,6 +2576,458 @@ export class AppModule { }
 
 Structure directives in Angular 2
 
+=======================================================
+=======================================================
+=======================================================
+//////////Сервисы и dependency injection//////////////
+/////////////////////////////////////////////////////
+.................Сервисы............................
+....................................................
+
+
+    
+
+ 
+Сервисы в Angular представляют довольно широкий спектр классов, которые выполняют некоторые специфические задачи, например, логгирование, работу с данными и т.д.
+
+В отличие от компонентов и директив сервисы не работают с представлениями, то есть с разметкой html, не оказывают на нее прямого влияния. Они выполняют строго определенную и достаточно узкую задачу.
+
+Стандартные задачи сервисов:
+
+-Предоставление данных приложению. Сервис может сам хранить данные в памяти, либо для получения данных может обращаться к какому-нибудь источнику данных, например, к серверу.
+
+-Сервис может представлять канал взаимодействия между отдельными компонентами приложения
+
+-Сервис может инкапсулировать бизнес-логику, различные вычислительные задачи, задачи по логгированию, которые лучше выносить из компонентов. Тем самым код компонентов будет сосредоточен непосредственно на работе с представлением. Кроме того, тем самым мы также можем решить проблему повторения кода, если нам потребуется выполнить одну и ту же задачу в разных компонентах и классах
+
+Допустим, у нас есть следующая базовая структура проекта:
+
+Сервисы в Angular и Typescript
+Добавим в папку src/app новый файл, который назовем phone.ts. Определим в этом файле следующий класс:
+
+
+export class Phone{
+     
+    constructor(public name: string, public price: number) { }
+}
+Этот класс будет представлять данные, с которыми мы будем работать.
+
+Далее добавим в папку src/app новый файл data.service.ts. Этот файл будет содержать код сервиса. Согласно условностям в названии файла после названия самого сервиса должна идти подстрока .service. Если название сервиса состоит из нескольких слов, которые начинаются с большой буквы, то в названии файла все эти слова пишутся с маленькой буквы и разделяются дефисами. Например, если сервис называется SpecialSuperHeroService, то файл сервиса будет называться special-super-hero.service.ts.
+
+Определим в этом файле следующий сервис:
+
+
+import {Phone} from './phone';
+ 
+export class DataService{
+ 
+    private data: Phone[] = [
+        { name:"Apple iPhone 7", price: 56000},
+        { name: "HP Elite x3", price: 56000},
+        { name: "Alcatel Idol S4", price: 25000}
+    ];
+    getData(): Phone[] {
+         
+        return this.data;
+    }
+    addData(name: string, price: number){
+         
+        this.data.push(new Phone(name, price));
+    }
+}
+В сервисе определен массив данных и методы для работы с ним. В реальном приложении эти данные можно получать с сервера или из какого-либо внешнего хранилища.
+
+Теперь определим код компонента:
+
+
+import { Component, OnInit} from '@angular/core';
+import {DataService} from './data.service';
+import {Phone} from './phone';
+       
+@Component({
+    selector: 'my-app',
+    template: `<div class="panel">
+        <div class="form-inline">
+            <div class="form-group">
+                <div class="col-md-8">
+                    <input class="form-control" [(ngModel)]="name" placeholder = "Модель" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-6">
+                    <input type="number" class="form-control" [(ngModel)]="price" placeholder="Цена" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-8">
+                    <button class="btn btn-default" (click)="addItem(name, price)">Добавить</button>
+                </div>
+            </div>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Модель</th>
+                    <th>Цена</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of items">
+                    <td>{{item.name}}</td>
+                    <td>{{item.price}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>`,
+    providers: [DataService]
+})
+export class AppComponent implements OnInit { 
+     
+    items: Phone[] = [];
+    constructor(private dataService: DataService){}
+     
+    addItem(name: string, price: number){
+         
+        this.dataService.addData(name, price);
+    }
+    ngOnInit(){
+        this.items = this.dataService.getData();
+    }
+}
+Чтобы задействовать сервис в компоненте, его не только надо импортировать:
+
+1
+import {DataService} from './data.service';
+Но также необходимо его добавить в коллекцию providers компонента:
+
+1
+providers: [DataService]
+Все используемые сервисы должны быть определены в коллекции providers. И после этого мы сможем задействовать встроенный в Angular механизм dependency injection и получить объект сервиса в конструкторе компонента и затем использовать по необходимости:
+
+
+constructor(private dataService: DataService){}
+Для загрузки данных реализуется метод ngOnInit() интерфейса OnInit, который вызывается после конструктора.
+
+И так как мы используем директиву ngModel для работы с элементами формы, то нам надо подключить модуль FormsModule в файле app.module.ts:
+
+
+import { NgModule }      from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule }   from '@angular/forms';
+import { AppComponent }   from './app.component';
+  
+@NgModule({
+    imports:      [ BrowserModule, FormsModule],
+    declarations: [ AppComponent],
+    bootstrap:    [ AppComponent ]
+})
+export class AppModule { }
+В итоге мы сможем и выводить данные и добавлять новые элементы через сервис
+
+=======================================================================================================
+=======================================================================================================
+=======================================================================================================
+..................................Внедрение сервиса в другой сервис....................................
+.......................................................................................................
+
+
+    
+
+ 
+Вполне вероятна ситуация, когда мы захотим использовать один сервис в другом сервисе. Например, в прошлой теме был создан сервис для работы с данными. Что если нам необходимо логгировать все операции с данными. Для логгирования определим новый сервис. Для этого добавим в папку src/app новый файл log.service.ts со следующим содержимым:
+
+
+export class LogService{
+ 
+    write(logMessage:string){
+         
+        console.log(logMessage);
+    }
+}
+Для логгирования в сервисе определен метод write, который выводит некоторое сообщение на консоль.
+
+Теперь используем этот сервис. Для этого изменим код в файле data.service.ts:
+
+
+
+import {Injectable} from '@angular/core';
+import {Phone} from './phone';
+import {LogService} from './log.service';
+ 
+@Injectable()
+export class DataService{
+ 
+    private data: Phone[] = [
+        { name:"Apple iPhone 7", price: 56000},
+        { name: "HP Elite x3", price: 56000},
+        { name: "Alcatel Idol S4", price: 25000}
+    ];
+    constructor(private logService: LogService){}
+     
+    getData(): Phone[] {
+         
+        this.logService.write("операция получения данных");
+        return this.data;
+    }
+    addData(name: string, price: number){
+         
+        this.data.push(new Phone(name, price));
+        this.logService.write("операция добавления данных");
+    }
+}
+Чтобы указать, что сервис сам может использовать другие сервисы, к классу сервиса применяется декоратор Injectable. Если класс не будет иметь подобного декоратора, то встроенный механизм внедрения зависимостей не сможет создать объект этого класса и выдаст ошибку.
+
+Существует общая рекомендации от разработчиков Angular применять Injectable к любому классу сервиса, хотя в принципе это необязательно.
+
+Хотя в прошлой теме мы могли использовать сервис в компоненте без применения к компоненту декоратора Injectable. Дело в том, что декоратор Component, который применяется к компоненту, является подтипом Injectable.
+
+И также в случае с DataService сервис LogService также надо зарегистрировать в списке провайдеров AppComponent:
+
+
+import { Component, OnInit} from '@angular/core';
+import {DataService} from './data.service';
+import {LogService} from './log.service';
+import {Phone} from './phone';
+       
+@Component({
+    selector: 'my-app',
+    template: `<div class="panel">
+        <div class="form-inline">
+            <div class="form-group">
+                <div class="col-md-8">
+                    <input class="form-control" [(ngModel)]="name" placeholder = "Модель" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-6">
+                    <input type="number" class="form-control" [(ngModel)]="price" placeholder="Цена" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-8">
+                    <button class="btn btn-default" (click)="addItem(name, price)">Добавить</button>
+                </div>
+            </div>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Модель</th>
+                    <th>Цена</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of items">
+                    <td>{{item.name}}</td>
+                    <td>{{item.price}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>`,
+    providers: [DataService, LogService]
+})
+export class AppComponent implements OnInit { 
+     
+    items: Phone[] = [];
+    constructor(private dataService: DataService){}
+     
+    addItem(name: string, price: number){
+         
+        this.dataService.addData(name, price);
+    }
+    ngOnInit(){
+        this.items = this.dataService.getData();
+    }
+}
+И несмотря на то, что напрямую LogService не используется в компоненте AppComponent, но он используется в DataService, который вызывается в AppComponent.
+
+И при выполнении операций с данными в консоли браузера мы сможем увидеть работу сервиса LogService.
+
+Injectable сервис в Angular 5
+
+============================================================================================
+============================================================================================
+============================================================================================
+......................Один сервис для всех компонентов......................................
+............................................................................................
+
+
+    
+
+ 
+Вполне возможно, что в нашем приложении будет несколько различных компонентов, которые используют сервисы. При этом компоненты могут использовать одни и те же сервисы. Например, в прошлых темах был создан сервис DataService, который управляет данными. Определим специальный компонент для работы с данными. Для этого возьмем проект из прошлой темы и добавим в папку src/app новый файл data.component.ts:
+
+Использование сервиса в компонентах в Angular
+Определим в этом файле следующий код:
+
+
+import { Component, OnInit} from '@angular/core';
+import {DataService} from './data.service';
+import {LogService} from './log.service';
+import {Phone} from './phone';
+       
+@Component({
+    selector: 'data-comp',
+    template: `<div class="panel">
+        <div class="form-inline">
+            <div class="form-group">
+                <input class="form-control" [(ngModel)]="name" placeholder = "Модель" />
+                <input type="number" class="form-control" [(ngModel)]="price" placeholder="Цена" />
+                <button class="btn btn-default" (click)="addItem(name, price)">Добавить</button>
+            </div>
+        </div>
+        <table class="table table-striped">
+            <tr *ngFor="let item of items">
+                <td>{{item.name}}</td>
+            </tr>
+        </table>
+    </div>`,
+    providers: [DataService, LogService]
+})
+export class DataComponent implements OnInit { 
+     
+    items: Phone[] = [];
+    constructor(private dataService: DataService){}
+     
+    addItem(name: string, price: number){
+         
+        this.dataService.addData(name, price);
+    }
+    ngOnInit(){
+        this.items = this.dataService.getData();
+    }
+}
+DataComponent загружает и добавляет данные. Для работы с сервисами декоратор Component определяет секцию providers:
+
+1
+providers: [DataService, LogService]
+Используем этот компонент DataComponent в главном компоненте приложения AppComponent:
+
+import { Component} from '@angular/core';
+       
+@Component({
+    selector: 'my-app',
+    template: `<data-comp></data-comp>
+               <data-comp></data-comp>`
+})
+export class AppComponent {}
+Этот компонент через элемент data-comp вызывает компонент DataComponent. Причем вызывает два раза. То есть для обработки каждого элемента будет создаваться свой объект DataComponent.
+
+И соответственно изменим главный модуль приложения AppModule:
+
+
+import { NgModule }      from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule }   from '@angular/forms';
+import { AppComponent }   from './app.component';
+import { DataComponent }   from './data.component';
+ 
+@NgModule({
+    imports:      [ BrowserModule, FormsModule ],
+    declarations: [ AppComponent, DataComponent],
+    bootstrap:    [ AppComponent ]
+})
+export class AppModule { }
+Теперь запустим приложение и попробуем добавить новый элемент:
+
+Несколько сервисов для компонентов в Angular
+Как видно на скриншоте, при добавлении в одном компоненте новый элемент будет добавляться только для этого компонента. Потому что у нас два отдельных компонента, и для каждого из них будет создаваться свой набор сервисов DataService и LogService.
+
+Такое поведение не всегда может быть предпочтительным. Возможно, потребуется, чтобы компоненты использовали один и тот же объект сервиса, вместо создания разных сервисов для каждого компонента. Для этого мы можем зарегистрировать все сервисы не в компоненте, а в главном модуле приложения AppModule:
+
+
+
+import { NgModule }      from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule }   from '@angular/forms';
+import { AppComponent }   from './app.component';
+import { DataComponent }   from './data.component';
+import {DataService} from './data.service';
+import {LogService} from './log.service';
+@NgModule({
+    imports:      [ BrowserModule, FormsModule ],
+    declarations: [ AppComponent, DataComponent],
+    providers: [DataService, LogService], // регистрация сервисов
+    bootstrap:    [ AppComponent ]
+})
+export class AppModule { }
+В этом случае мы уже можем убрать регистрацию сервисов из компонента DataComponent:
+
+
+import { Component, OnInit} from '@angular/core';
+import {DataService} from './data.service';
+import {LogService} from './log.service';
+import {Phone} from './phone';
+       
+@Component({
+    selector: 'data-comp',
+    template: `<div class="panel">
+        <div class="form-inline">
+            <div class="form-group">
+                <input class="form-control" [(ngModel)]="name" placeholder = "Модель" />
+                <input type="number" class="form-control" [(ngModel)]="price" placeholder="Цена" />
+                <button class="btn btn-default" (click)="addItem(name, price)">Добавить</button>
+            </div>
+        </div>
+        <table class="table table-striped">
+            <tr *ngFor="let item of items">
+                <td>{{item.name}}</td>
+            </tr>
+        </table>
+    </div>`
+})
+export class DataComponent implements OnInit { 
+     
+    items: Phone[] = [];
+    constructor(private dataService: DataService){}
+     
+    addItem(name: string, price: number){
+         
+        this.dataService.addData(name, price);
+    }
+    ngOnInit(){
+        this.items = this.dataService.getData();
+    }
+}
+После этого оба объекта DataComponent будут использовать один и тот же сервис DataService. Поэтому добавление объекта в одном компоненте автоматически отразится и на другом:
+
+Один сервис на все классы в Angular
+
+ 
+
+
+    
+
+ 
+
+ 
+
+
+
+
+ 
+
+ 
+
+ 
+
+
+
+
+
+
+ 
+
+
+    
+
+
+ 
+
+
+
+
+
  
 
 
