@@ -7,7 +7,8 @@ import {Phone} from './phone';
     selector: 'data-comp',
     templateUrl: './data.component.html',
     styleUrls: ['./app.component.css'],
-     providers: [DataService, LogService]
+    providers: [DataService, LogService]//если эту строчку удалить, то добавление строчки в один обьект
+    									//будет отображаться и в другом обьекте
 })
 
 export class DataComponent implements OnInit { 
